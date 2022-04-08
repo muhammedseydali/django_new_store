@@ -6,7 +6,7 @@ from django.db.models.base import Model
 from django.db.models.deletion import CASCADE
 from django.db.models.fields import DateField
 from store.models import Product, Variation
-from accounts.models import Account
+from app.models import CustomUser
 
 # Create your models here.
 
@@ -20,7 +20,7 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    user = models.ForeignKey(Account,on_delete=models.CASCADE,null=True)
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,null=True)
     variations = models.ManyToManyField(Variation,blank=True)
     cart = models.ForeignKey(Cart,on_delete=models.CASCADE,null=True)
     quantity =  models.IntegerField()
