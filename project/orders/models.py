@@ -17,6 +17,13 @@ STATUS1 = (
     ('Canceled', 'Canceled')
 )
 
+TYPE = (
+    ('New', 'New'),
+    ('Temp', 'Temp'),
+    ('Good', 'Good'),
+    
+)
+
 class Payment(models.Model):
     user = models.ForeignKey(Account,on_delete=models.CASCADE)
     payment_id = models.CharField(max_length=100)
@@ -94,5 +101,7 @@ class OrderProduct(models.Model):
 
     def __str__(self):
         return self.product.product_name
+
+
 
 
