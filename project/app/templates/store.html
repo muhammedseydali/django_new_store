@@ -1,0 +1,227 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block content %}
+<!-- ========================= SECTION PAGETOP ========================= -->
+<section class="section-pagetop bg">
+<div class="container">
+{% if 'search' in request.path %}
+	<h2 class="title-page">Search Results</h2>
+{% else %}
+	<h2 class="title-page">{{category_title | upper }}</h2>
+{% endif %}
+	
+</div> <!-- container //  -->
+</section>
+<!-- ========================= SECTION INTRO END// ========================= -->
+
+<!-- ========================= SECTION CONTENT ========================= -->
+<section class="section-content padding-y">
+<div class="container">
+
+<div class="row">
+	<aside class="col-md-3">
+		
+<div class="card">
+	<article class="filter-group">
+		<header class="card-header">
+			<a href="#" data-toggle="collapse" data-target="#collapse_1" aria-expanded="true" class="">
+				<i class="icon-control fa fa-chevron-down"></i>
+				<h6 class="title">Categories</h6>
+			</a>
+		</header>
+		<div class="filter-content collapse show" id="collapse_1" style="">
+			<div class="card-body">
+				
+				<ul class="list-menu">
+					{% for category in all_categories %}
+				<li><a href="{% url 'view-category-store' category.id %}">{{category}}  </a></li>
+					{% endfor %}
+				</ul>
+
+			</div> <!-- card-body.// -->
+		</div>
+	</article> <!-- filter-group  .// -->
+	
+	
+	<!-- <article class="filter-group">
+		<header class="card-header">
+			<a href="#" data-toggle="collapse" data-target="#collapse_3" aria-expanded="true" class="">
+				<i class="icon-control fa fa-chevron-down"></i>
+				<h6 class="title">Price range </h6>
+			</a>
+		</header>
+		<div class="filter-content collapse show" id="collapse_3" >
+			<div class="card-body">
+				
+				<div class="form-row">
+				<div class="form-group col-md-6">
+				  <label>Min</label>
+				  
+				  	<select class="mr-2 form-control">
+						<option value="0">$0</option>
+						<option value="50">$50</option>
+						<option value="100">$100</option>
+						<option value="150">$150</option>
+						<option value="200">$200</option>
+						<option value="500">$500</option>
+						<option value="1000">$1000</option>
+					</select>
+				</div>
+				<div class="form-group text-right col-md-6">
+				  <label>Max</label>
+				  	<select class="mr-2 form-control">
+						<option value="50">$50</option>
+						<option value="100">$100</option>
+						<option value="150">$150</option>
+						<option value="200">$200</option>
+						<option value="500">$500</option>
+						<option value="1000">$1000</option>
+						<option value="2000">$2000+</option>
+					</select>
+				</div>
+				</div>
+				<button class="btn btn-block btn-primary">Apply</button>
+			</div>
+		</div> 
+	</article> -->
+	 <!-- filter-group .// -->
+	
+</div> <!-- card.// -->
+
+	</aside> <!-- col.// -->
+	<main class="col-md-9">
+
+<header class="border-bottom mb-4 pb-3">
+		<div class="form-inline">
+			<span class="mr-md-auto">{{vehicles_count}} Items found </span>
+			
+		</div>
+</header><!-- sect-heading -->
+<style>
+	.btn-success{
+		background-color:#00B2BD ;
+	}
+
+	.btn-success:hover{
+		background-color: rgb(255, 255, 255);
+		color: #00B2BD;
+	}
+	.btn-primary{
+		background-color:#000000 ;
+	}
+	.btn-primary:hover{
+		background-color:rgb(255, 255, 255) ;
+		color: black;
+	}
+	.fix-height{
+		height: 111px !important;
+	}
+	
+</style>
+<div class="row">
+	{% if vehicles %}
+	{% for vehicle in vehicles %}
+	<div class="col-md-4">
+		<a href="{% url 'showroom' vehicle.id %}">
+			<figure class="card card-product-grid">
+				<div class="img-wrap"> 
+					{% if vehicle.vehicleoffer.is_active %}
+						<div class="card shadow-lg" style="background-color: #00B2BD; height: 25px; width: 75px;  position: absolute; left: 0px; top: 25px;  z-index: 1; border-radius: 0pt;">
+							<p style="color: whitesmoke; text-align: center; font-size: medium; font-family: sans-serif;">{{vehicle.vehicleoffer.discount}}% off</p>
+			  			</div>
+			  		{% endif %}
+					
+					<img src="{{vehicle.gif}}">
+					
+				</div> <!-- img-wrap.// -->
+				<figcaption class="info-wrap">
+					
+					
+					<div class="rating-star " >
+						<span >
+							<i class="fa fa-star{% if vehicle.rating < 0.5 %}-o{% elif vehicle.rating >= 0.5 and vehicle.rating < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
+							<i class="fa fa-star{% if vehicle.rating < 1.5 %}-o{% elif vehicle.rating >= 1.5 and vehicle.rating < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
+							<i class="fa fa-star{% if vehicle.rating < 2.5 %}-o{% elif vehicle.rating >= 2.5 and vehicle.rating < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
+							<i class="fa fa-star{% if vehicle.rating < 3.5 %}-o{% elif vehicle.rating >= 3.5 and vehicle.rating < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
+							<i class="fa fa-star{% if vehicle.rating < 4.5 %}-o{% elif vehicle.rating >= 4.5 and vehicle.rating < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
+					<span style="float: right;">{{vehicle.review_count}} reviews</span>
+							</span>
+					</div>
+					<div class="fix-height">
+						
+						<h5 class="price text-center" style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">{{vehicle.vehicle_name}} </h5><span class="price">SOLD BY <span style="color: #00B2BD;"><span style="float: right;">{{vehicle.vendor_id}}</span></span></span>
+						
+						
+						<div class="price-wrap mt-2">
+							
+							<span class="price">TOP SPEED  <span style="float: right;">{{vehicle.top_speed}} km/h</span></span>
+							
+							<span class="price"> <br> RANGE  <span style="float: right;">{{vehicle.range}} km</span></span>
+							
+						</div> <!-- price-wrap.// -->
+					</div>
+					<a href="{% url 'showroom' vehicle.id %}" class="btn btn-block btn-success">ShowRoom</a>
+					
+				</figcaption>
+				
+			</figure>
+			
+
+		</a>
+		
+	</div>
+	{% endfor %} 
+
+	{% else %}
+	<div class="">
+		<h2>No results found. Please try again... </h2>
+	</div>
+	{% endif %}
+	<!-- col.// -->
+	
+	
+	
+
+
+	
+
+	
+</div> <!-- row end.// -->
+
+
+<nav class="mt-4" aria-label="Page navigation sample">
+	{% if vehicles.has_other_pages %}
+  <ul class="pagination">
+	  {% if vehicles.has_previous %}
+    <li class="page-item "><a class="page-link" href="?page={{vehicles.previous_page_number}}">Previous</a></li>
+	{% else %}
+	<li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+	{% endif %}
+	{% for i in vehicles.paginator.page_range %}
+		{% if vehicles.number == i %}
+    		<li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
+		{% else %}
+			<li class="page-item "><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+		{% endif %}
+
+	{% endfor %}
+    {% if vehicles.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{vehicles.next_page_number}}">Next</a></li>
+	{% else %}
+	<li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+
+	{% endif %}
+  </ul>
+  {% endif %}
+</nav>
+
+	</main> <!-- col.// -->
+
+</div>
+
+</div> <!-- container .//  -->
+</section>
+<!-- ========================= SECTION CONTENT END// ========================= -->
+{% endblock %}
+
