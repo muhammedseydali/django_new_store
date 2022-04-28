@@ -1,0 +1,196 @@
+
+{% extends 'base.html'%} {% load static%} {% block content%}
+{% load humanize %}
+<style>
+	.btn-primary{
+		background-color: #00B2BD;
+		color: rgb(255, 255, 255);
+	}
+	.btn-primary:hover{
+		background-color: rgb(255, 255, 255);
+		color: #00B2BD;
+	}
+	.btn-light{
+		background-color: rgb(255, 255, 255);
+		color: #00B2BD;
+	}
+	.btn-light:hover{
+		
+		background-color: #000000;
+		color: rgb(255, 255, 255);
+	}
+</style>
+
+
+<section class="section-content padding-y bg">
+<div class="container">
+	{% if not cart_items %}
+	<h2  class="text-center">Your Cart Is Empty </h2>
+	<br>
+	<div class="text-center">
+		<a href="{% url 'home' %}" class="btn btn-primary">Explore now</a>
+	</div>
+
+	{% else %}
+	
+	
+<!-- ============================ COMPONENT 1 ================================= -->
+
+<div class="row">
+	<aside class="col-lg-9">
+<div class="card">
+<table class="table table-responsive table-borderless table-shopping-cart">
+<thead class="text-muted">
+<tr class="small text-uppercase">
+  <th scope="col">Vehicle</th>
+  <th scope="col" width="120">Quantity</th>
+  <th scope="col" width="120">Booking</th>
+  <th scope="col" width="120">Vehicle</th>
+  <th scope="col" class="text-right" width="200"> </th>
+</tr>
+</thead>
+<tbody>
+	{% for cart_item in cart_items %}
+<tr>
+	<td>
+		<figure class="itemside align-items-center">
+			<a href="{% url 'showroom-variant' cart_item.variant.id %}">
+
+				<div class="aside"><img src="{{cart_item.variant.image1.url}}" class="img-sm"></div>
+				<figcaption class="info">
+					
+					<div class="">
+						<div class="">
+							<a href="{% url 'showroom-variant' cart_item.variant.id %}" class="title font-weight-bold text-dark">{{cart_item.variant.vehicle_id}}</a>
+				
+						</div>
+						<div class="" style="border:3px solid black;border-radius: 3px;width: 40px;height: 20px;background-color: {{cart_item.variant.color}};">
+
+						</div>
+						
+					</div> 
+					<p> <span  class="font-weight-bold"> RANGE <br></span>{{cart_item.variant.vehicle_id.range}} km <br> <span class="font-weight-bold">TOP SPEED <br></span> {{cart_item.variant.vehicle_id.top_speed}} km/h</p>
+				</figcaption>
+			</a>
+		</figure>
+	</td>
+	<td> 
+		<!-- col.// -->
+					<div class="col"> 
+						<div class="input-group input-spinner">
+							{% if  cart_item.quantity != 1 %}
+							<div class="input-group-prepend">
+							<a href="{% url 'decrement_quantity' cart_item.variant.id %}" class="btn btn-light" type="button" id="button-plus"> <i class="fa fa-minus"></i> </a>
+							</div>
+							{% else %}
+							<div class="input-group-prepend">
+								<a href="#" class="btn btn-light" type="button" id="button-plus"> <i class="fa fa-minus"></i> </a>
+								</div>
+							{% endif %}
+							<input type="text" disabled class="form-control p-2"  value="{{cart_item.quantity}}">
+							<div class="input-group-append">
+							<a href="{% url 'add_quantity' cart_item.variant.id %}" class="btn btn-light" type="button" id="button-minus"> <i class="fa fa-plus"></i> </a>
+							</div>
+						</div> <!-- input-group.// -->
+					</div> <!-- col.// -->
+	</td>
+	<td> 
+		<div class="price-wrap"> 
+			<var class="price">₹{{cart_item.booking_price}}</var>
+			<small class="text-muted">₹ {{cart_item.variant.vehicle_id.category.bookingprice.booking_price}} each </small> 
+		</div> <!-- price-wrap .// -->
+	</td>
+	<td> 
+		<div class="price-wrap"> 
+			<var class="price">₹{{cart_item.sub_total |floatformat:0 | intcomma}}</var> 
+			{% if cart_item.variant.vehicle_id.vehicleoffer.is_active %}
+            <small>₹ {{cart_item.variant.get_price |floatformat:0|intcomma }} each</small>
+            <span style="font-size: small;"><strike> <b>{{cart_item.variant.price | intcomma }}</b> </strike> </span>
+            
+            {% else %}
+            <small>₹ {{cart_item.variant.price |floatformat:0| intcomma }} each</small>
+        	{% endif %}
+			
+		</div> <!-- price-wrap .// -->
+	</td>
+
+	<td class="text-right"> 
+	<a href="{% url 'remove_cart_item' cart_item.variant.id %}" onclick="removeVehicle(event)" class="btn btn-danger"> Remove</a>
+	</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+</table>
+</div> <!-- card.// -->
+
+	</aside> <!-- col.// -->
+	<aside class="col-lg-3">
+
+		<div class="card">
+		<div class="card-body">
+			<dl class="dlist-align">
+			  <dt>Total vehicle price:</dt>
+			  <dd class="text-right">₹{{ total_price |floatformat:"0" | intcomma }}</dd>
+			</dl>
+			<hr>
+			<dl class="dlist-align">
+				<dt>Booking price:</dt>
+				<dd class="text-right">₹{{ booking_price |floatformat:"0" | intcomma }}</dd>
+			  </dl>
+			<dl class="dlist-align">
+			  <dt>Tax(5%):</dt>
+			  <dd class="text-right">₹{{ total_tax |floatformat:"0" | intcomma }}</dd>
+			</dl>
+			<dl class="dlist-align">
+			  <dt>Total:</dt>
+			  <dd class="text-right text-dark b"><strong>₹{{ grand_total |floatformat:"0" | intcomma }}</strong></dd>
+			</dl>
+			<hr>
+			<p class="text-center mb-3">
+				<img src="{% static './images/misc/payments.png'%}" height="26">
+			</p>
+			<a href="{% url 'checkout' %}" class="btn btn-primary btn-block"> Checkout </a>
+			<a href="{% url 'home' %}" class="btn btn-light btn-block">Continue Shopping</a>
+		</div> <!-- card-body.// -->
+		</div> <!-- card.// -->
+
+</aside> <!-- col.// -->
+
+
+</div> <!-- row.// -->
+<!-- ============================ COMPONENT 1 END .// ================================= -->
+{% endif %}
+</div> <!-- container .//  -->
+</section>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+        function removeVehicle(ev) {
+            ev.preventDefault();
+            var urlToRedirect = ev.currentTarget.getAttribute('href'); //use currentTarget because the click may be on the nested i tag and not a tag causing the href to be empty
+            
+            swal({
+              title: "Are you sure?",
+              text: "",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            })
+            .then((willDelete) => {
+              // redirect with javascript here as per your logic after showing the alert using the urlToRedirect value
+              if (willDelete) {
+                swal("Poof! Vehicle removed from cart..!", {
+                  icon: "success",
+                });
+                window.location.href = urlToRedirect;
+              } else {
+                swal("No changes");
+              }
+            });
+            console.log(urlToRedirect); // verify if this is the right URL
+            console.log("-----------------------")
+            
+            }
+    </script>
+{% endblock %}
